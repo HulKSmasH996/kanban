@@ -78,11 +78,30 @@ public class UsersDaoService implements UsersDao{
 
     @Override
     public int deleteUserbyId(String userId) {
-        return 0;
+
+        Firestore dbFirestore = FirestoreClient.getFirestore();
+        ApiFuture<WriteResult> writeResult = dbFirestore.collection(COL_NAME).document(String.valueOf(userId)).delete();
+        return 1;
+
     }
 
     @Override
     public int updateUserbyId(String userId, Users updatedUser) {
-        return 0;
+
+        Firestore dbFirestore = FirestoreClient.getFirestore();
+        DocumentReference docRef = dbFirestore.collection(COL_NAME).document(userId);
+
+        // (async) Update fields
+        ApiFuture<WriteResult> future = docRef.
+                update(
+                        "userName" , updatedUser.getUserName(),
+                        "userEmail" , updatedUser.getUserEmail(),
+                        "userId" , updatedUser.getUserId(),
+                        "userDetails" , updatedUser.getUserDetails(),
+                        "userIssues" , updatedUser.getUserIssues()
+
+                        );
+        return  1;
+
     }
 }

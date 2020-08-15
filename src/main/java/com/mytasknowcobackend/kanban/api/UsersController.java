@@ -32,8 +32,16 @@ public class UsersController {
    
 
    @GetMapping(path = "{userId}")
-    public Users selectUserbyId(@PathVariable("userId") String userId){
-        return usersService.selectUserbyId(userId);
-   }
+    public Users selectUserbyId(@PathVariable("userId") String userId){ return usersService.selectUserbyId(userId);  }
+
+    @DeleteMapping(path = "{userId}")
+    public void deleteUserbyId(@PathVariable("userId") String userId){
+        usersService.deleteUserbyId(userId);
+    }
+
+    @PutMapping(path = "{userId}")
+    public  void  updateUserbyId(@PathVariable("userId") String userId, @RequestBody Users updatedUser){
+        usersService.updateUserbyId(userId,updatedUser);
+    }
 
 }
