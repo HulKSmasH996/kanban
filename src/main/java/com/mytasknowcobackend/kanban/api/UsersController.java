@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("api/v1/users")
 @RestController
 public class UsersController {
@@ -28,6 +29,7 @@ public class UsersController {
     public List<Users> returnallUsers(){
         return  usersService.returnAllUsers();
    }
+   
 
    @GetMapping(path = "{userId}")
     public Users selectUserbyId(@PathVariable("userId") String userId){

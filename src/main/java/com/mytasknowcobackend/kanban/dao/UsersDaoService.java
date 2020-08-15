@@ -23,7 +23,7 @@ public class UsersDaoService implements UsersDao{
     public int addUser(Users newuser) {
         Firestore dbFirestore = FirestoreClient.getFirestore();
 
-        DocumentReference addedDocRef = dbFirestore.collection(COL_NAME).document();
+        DocumentReference addedDocRef = dbFirestore.collection(COL_NAME).document(newuser.getUserId());
         //System.out.println("Added document with ID: " + addedDocRef.getId());
         newuser.setUserId(addedDocRef.getId().toString());
         ApiFuture<WriteResult> writeResult = addedDocRef.set(newuser);
