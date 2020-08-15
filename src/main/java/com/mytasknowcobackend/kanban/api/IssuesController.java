@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("api/v1/users")
+@RequestMapping("api/v1/issues")
 @RestController
 public class IssuesController {
 
@@ -32,5 +32,17 @@ public class IssuesController {
     	return issuesService.returnAllIssues();
     }
 
+    @GetMapping(path = "{issueId}")
+    public  Issues selectIssuebyId(@PathVariable ("issueId") String issueId) { return issuesService.selectIssuebyId(issueId); }
+
+    @DeleteMapping(path = "{issueId}")
+    public void deleteIssuebyId(@PathVariable("issueId") String issueId){
+        issuesService.deleteIssuebyId(issueId);
+    }
+
+    @PutMapping(path = "{issueId}")
+    public  int  updateIsssuebyId(@PathVariable("issueId") String issueId, @RequestBody Issues updatedIssue){
+        return issuesService.updateIssuebyId(issueId,updatedIssue);
+    }
 
 }

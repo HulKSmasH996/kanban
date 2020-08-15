@@ -25,4 +25,10 @@ public class IssuesService {
 	public List<Issues> returnAllIssues(){
 		return issuesDao.selectAllIssues();
 	}
+
+	public  Issues selectIssuebyId(String issueId){ return  issuesDao.selectIssuebyId(issueId); }
+
+	public int deleteIssuebyId(String issueId){ return issuesDao.deleteIssuebyId(issueId); }
+
+	public int updateIssuebyId(String issueId, Issues updatedIssue){ return issuesDao.updateIssuebyId(issueId,updatedIssue); }
 }

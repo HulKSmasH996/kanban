@@ -31,7 +31,7 @@ public class IssuesDaoService implements IssuesDao{
 	@Override
 	public List<Issues> selectAllIssues() {
 		Firestore dbFirestore = FirestoreClient.getFirestore();
-		ApiFuture<QuerySnapshot> future = dbFirestore.collection("users").get();
+		ApiFuture<QuerySnapshot> future = dbFirestore.collection(COL_NAME).get();
 		Issues issue = null;
 		List<QueryDocumentSnapshot> documents = null;
 		issuesList.clear();
@@ -54,17 +54,55 @@ public class IssuesDaoService implements IssuesDao{
 
 	@Override
 	public Issues selectIssuebyId(String issueId) {
-		return null;
+		Firestore dbFirestore = FirestoreClient.getFirestore();
+		ApiFuture<QuerySnapshot> future = dbFirestore.collection(COL_NAME).get();
+		Issues mySelectedIssue = null;
+		List<QueryDocumentSnapshot> documents = null;
+		try {
+			documents = future.get().getDocuments();
+			for (QueryDocumentSnapshot document : documents) {
+				//System.out.println(document.getId() + " => " + document.toObject(Issues.class));
+				Issues allIssues = document.toObject(Issues.class);
+				if (allIssues.getIssueId().equals(issueId))
+					mySelectedIssue = allIssues;
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
+		return mySelectedIssue;
 	}
 
 	@Override
 	public int deleteIssuebyId(String issueId) {
-		return 0;
+		Firestore dbFirestore = FirestoreClient.getFirestore();
+		ApiFuture<WriteResult> writeResult = dbFirestore.collection(COL_NAME).document(String.valueOf(issueId)).delete();
+		return 1;
 	}
 
 	@Override
 	public int updateIssuebyId(String issueId, Issues updatedIssue) {
-		return 0;
+		Firestore dbFirestore = FirestoreClient.getFirestore();
+		DocumentReference docRef = dbFirestore.collection(COL_NAME).document(issueId);
+
+	// (async) Update fields
+		ApiFuture<WriteResult> future = docRef.
+				update(
+						 "issueName" , updatedIssue.getIssueName(),
+						 "issueId" , updatedIssue.getIssueId(),
+						 "issueType" , updatedIssue.getIssueType(),
+						 "issuePriority" , updatedIssue.getIssuePriority(),
+						 "issueDescription" , updatedIssue.getIssueDescription(),
+						 "issueTags" , updatedIssue.getIssueTags(),
+						 "issueAssignee" , updatedIssue.getIssueAssignee(),
+						 "issueSummary" , updatedIssue.getIssueSummary(),
+						 "issueStartTime" , updatedIssue.getIssueStartTime(),
+						 "issueEndTime" , updatedIssue.getIssueEndTime(),
+						 "issueDuration" , updatedIssue.getIssueDuration(),
+						 "issueStatus" , updatedIssue.getIssueStatus()
+				);
+		return  1;
 	}
 	 
 	/*@Override
