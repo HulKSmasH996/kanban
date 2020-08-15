@@ -20,10 +20,6 @@ public class IssuesController {
   //  @ApiOperation(value = "Create an issue")
     @PostMapping
     public void addIssue(@RequestBody Issues issue) {
-		/*
-		 * if(user.isValidEmail(user.getEmail())) userService.addUser(user); else throw
-		 * new Exception(result.toString());
-		 */
     	issuesService.addIssue(issue);
     }
     
