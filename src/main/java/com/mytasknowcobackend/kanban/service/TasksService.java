@@ -26,6 +26,10 @@ public class TasksService {
         return tasksDao.selectAllTasks();
     }
 
+    public List<Tasks> selectTaskbyCreator(String userId){
+        return tasksDao.selectTaskbyCreator(userId);
+    }
+
     public  Tasks selectTaskbyId(String taskId){ return  tasksDao.selectTaskbyId(taskId); }
 
     public int deleteTaskbyId(String taskId){ return tasksDao.deleteTaskbyId(taskId); }

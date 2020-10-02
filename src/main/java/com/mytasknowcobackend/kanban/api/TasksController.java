@@ -32,6 +32,10 @@ public class TasksController {
     @GetMapping(path = "{taskId}")
     public  Tasks selectTasksbyId(@PathVariable ("taskId") String taskId) { return tasksService.selectTaskbyId(taskId); }
 
+    @GetMapping(path = "user-"+"{userId}")
+    public  List<Tasks> selectTasksbyCreator(@PathVariable ("userId") String userId) { return tasksService.selectTaskbyCreator(userId); }
+
+
     @DeleteMapping(path = "{taskId}")
     public void deleteTasksbyId(@PathVariable("taskId") String taskId){
         tasksService.deleteTaskbyId(taskId);

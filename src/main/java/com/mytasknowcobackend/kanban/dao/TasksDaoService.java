@@ -102,4 +102,30 @@ public class TasksDaoService implements TasksDao{
                 );
         return  1;
     }
+
+    @Override
+    public List<Tasks> selectTaskbyCreator(String userId) {
+        Firestore dbFirestore = FirestoreClient.getFirestore();
+        ApiFuture<QuerySnapshot> future = dbFirestore.collection(COL_NAME).get();
+        String uid = userId.replace("user-","");
+        Tasks tasks = null;
+        List<QueryDocumentSnapshot> documents = null;
+        tasksList.clear();
+        System.out.println(userId +"     "+ uid);
+        try {
+            documents = future.get().getDocuments();
+            for (QueryDocumentSnapshot document : documents) {
+                System.out.println(document.getId() + " => " + document.toObject(Tasks.class));
+                tasks = document.toObject(Tasks.class);
+                if(tasks.getTaskCreatedBy().equals(uid))
+                tasksList.add(tasks);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return tasksList;
+    }
 }
