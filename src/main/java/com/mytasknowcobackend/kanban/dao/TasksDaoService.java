@@ -111,11 +111,11 @@ public class TasksDaoService implements TasksDao{
         Tasks tasks = null;
         List<QueryDocumentSnapshot> documents = null;
         tasksList.clear();
-        System.out.println(userId +"     "+ uid);
+       // System.out.println(userId +"     "+ uid);
         try {
             documents = future.get().getDocuments();
             for (QueryDocumentSnapshot document : documents) {
-                System.out.println(document.getId() + " => " + document.toObject(Tasks.class));
+                //System.out.println(document.getId() + " => " + document.toObject(Tasks.class));
                 tasks = document.toObject(Tasks.class);
                 if(tasks.getTaskCreatedBy().equals(uid))
                 tasksList.add(tasks);
