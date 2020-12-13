@@ -17,6 +17,7 @@ public interface IssuesDao {
     int deleteIssuebyId(String issueId);
 
     int updateIssuebyId(String issueId, Issues updatedIssue);
+
 	
 
 }
