@@ -15,7 +15,7 @@ public class FBinit {
     public void initialize() {
         try {
 
-            InputStream serviceAccount = this.getClass().getClassLoader().getResourceAsStream("mytasknow-co-firebase-adminsdk-8i8c4-27468cec1e.json");
+            InputStream serviceAccount = this.getClass().getClassLoader().getResourceAsStream("mytasknowco-9d4d5-firebase-adminsdk-e4bdm-22dd1295ec.json");
                     //new FileInputStream("path/to/serviceAccountKey.json");
            /* FileInputStream serviceAccount1 =
                     new FileInputStream("path/to/serviceAccountKey.json");*/
