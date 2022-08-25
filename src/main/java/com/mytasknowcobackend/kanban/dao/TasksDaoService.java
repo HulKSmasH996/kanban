@@ -1,6 +1,8 @@
 package com.mytasknowcobackend.kanban.dao;
 
 import com.google.api.core.ApiFuture;
+import com.google.api.core.ApiFutureCallback;
+import com.google.api.core.ApiFutures;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import com.mytasknowcobackend.kanban.model.Tasks;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 
 @Repository("taskfirestoredao")
 public class TasksDaoService implements TasksDao{
@@ -16,7 +19,7 @@ public class TasksDaoService implements TasksDao{
 
     public static final String COL_NAME = "tasks";
     public static List<Tasks> tasksList = new ArrayList<>();
-    
+    public static int res =0;
     @Override
     public int addTasks(Tasks tasks) {
         Firestore dbFirestore = FirestoreClient.getFirestore();
@@ -63,8 +66,12 @@ public class TasksDaoService implements TasksDao{
             for (QueryDocumentSnapshot document : documents) {
                 //System.out.println(document.getId() + " => " + document.toObject(Issues.class));
                 Tasks allTasks = document.toObject(Tasks.class);
-                if (allTasks.getTaskId().equals(taskId))
+                if (allTasks.getTaskId().equals(taskId)){
                     mySelectedTask = allTasks;
+                   // tasksList.add(mySelectedTask);
+                }
+
+
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -76,9 +83,21 @@ public class TasksDaoService implements TasksDao{
 
     @Override
     public int deleteTaskbyId(String taskId) {
+
         Firestore dbFirestore = FirestoreClient.getFirestore();
         ApiFuture<WriteResult> writeResult = dbFirestore.collection(COL_NAME).document(String.valueOf(taskId)).delete();
-        return 1;
+        ApiFutures.addCallback(writeResult, new ApiFutureCallback<WriteResult>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+               res = 0;
+            }
+
+            @Override
+            public void onSuccess(WriteResult writeResult) {
+                res = 1;
+            }
+        },Runnable::run);
+        return res;
     }
 
     @Override
