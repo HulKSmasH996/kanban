@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "https://mytasknowco-9d4d5.web.app")
 @RequestMapping("api/v1/tasks")
 @RestController
 
