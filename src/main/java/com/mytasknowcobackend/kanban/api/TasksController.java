@@ -22,11 +22,19 @@ public class TasksController {
         this.tasksService = tasksService;
     }
 
-    @PostMapping
-    public void addTask(@RequestBody Tasks tasks) {
-        tasksService.addTask(tasks);
+   /* @PostMapping
+    public int addTask(@RequestBody Tasks tasks) {
+        return tasksService.addTask(tasks);
     }
-
+*/
+    @RequestMapping(method = RequestMethod.POST)
+    public ResponseEntity<?> addTask(@RequestBody Tasks tasks) {
+        if(tasksService.addTask(tasks)!=0) {
+            return new ResponseEntity<>(tasksService.addTask(tasks), HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(0, HttpStatus.SERVICE_UNAVAILABLE);
+        }
+    }
     @GetMapping
     public List<Tasks> returnAllTasks(){
         return tasksService.returnAllTasks();
@@ -55,10 +63,10 @@ public class TasksController {
     public  List<Tasks> selectTasksbyCreator(@PathVariable ("userId") String userId) { return tasksService.selectTaskbyCreator(userId); }
 
 
-    @DeleteMapping(path = "{taskId}")
+   /* @DeleteMapping(path = "{taskId}")
     public int deleteTasksbyId(@PathVariable("taskId") String taskId){
         return tasksService.deleteTaskbyId(taskId);
-    }
+    }*/
 
     @RequestMapping(value="/deleteTaskbyId", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteTaskbyId(@RequestParam(name = "taskId") String taskId) {

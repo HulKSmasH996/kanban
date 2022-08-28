@@ -28,7 +28,19 @@ public class TasksDaoService implements TasksDao{
         //System.out.println("Added document with ID: " + addedDocRef.getId());
         tasks.setTaskId(addedDocRef.getId().toString());
         ApiFuture<WriteResult> writeResult = addedDocRef.set(tasks);
-        return 1;
+        ApiFutures.addCallback(writeResult, new ApiFutureCallback<WriteResult>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                res=0;
+            }
+
+            @Override
+            public void onSuccess(WriteResult writeResult) {
+                res=1;
+                System.out.println(writeResult.toString());
+            }
+        }, Runnable::run);
+        return res;
     }
 
     @Override
