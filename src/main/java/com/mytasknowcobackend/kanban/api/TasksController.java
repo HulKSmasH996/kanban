@@ -23,33 +23,18 @@ public class TasksController {
         this.tasksService = tasksService;
     }
 
-   /* @PostMapping
-    public int addTask(@RequestBody Tasks tasks) {
-        return tasksService.addTask(tasks);
-    }
-*/
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> addTask(@RequestBody Tasks tasks) {
         if(tasksService.addTask(tasks)!=0) {
             return new ResponseEntity<>(tasksService.addTask(tasks), HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>(0, HttpStatus.SERVICE_UNAVAILABLE);
+            return new ResponseEntity<>(0, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @GetMapping
     public List<Tasks> returnAllTasks(){
         return tasksService.returnAllTasks();
     }
-
-    /*@GetMapping(path = "{taskId}")
-    public  Tasks selectTasksbyId(@PathVariable ("taskId") String taskId) { return tasksService.selectTaskbyId(taskId); }
-*/
-   /* @GetMapping(path="getTaskbyId")
-    public  List<Tasks> selectTasksbyIdv2(@RequestParam(name = "taskId") String taskId){
-        //if(tasksService.selectTaskbyId(taskId)!=null)
-        return tasksService.selectTaskbyId(taskId);
-       // else
-    }*/
 
     @RequestMapping(value="/getTaskbyId", method = RequestMethod.GET)
     public ResponseEntity<?> getTaskbyId(@RequestParam(name = "taskId") String taskId) {
@@ -60,10 +45,14 @@ public class TasksController {
         }
     }
 
-    @GetMapping(path = "user-"+"{userId}")
-    public  List<Tasks> selectTasksbyCreator(@PathVariable ("userId") String userId) { return tasksService.selectTaskbyCreator(userId); }
-
-
+    @RequestMapping(value="/getTaskbyUserId", method = RequestMethod.GET)
+    public ResponseEntity<?> getTaskbyICreator(@RequestParam(name = "userId") String taskId) {
+        if(!tasksService.selectTaskbyCreator(taskId).isEmpty()) {
+            return new ResponseEntity<>(tasksService.selectTaskbyCreator(taskId), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
    /* @DeleteMapping(path = "{taskId}")
     public int deleteTasksbyId(@PathVariable("taskId") String taskId){
         return tasksService.deleteTaskbyId(taskId);
@@ -78,10 +67,17 @@ public class TasksController {
         }
     }
 
-    @PutMapping(path = "{taskId}")
+   /* @PutMapping(path = "{taskId}")
     public  int  updateTaskbyId(@PathVariable("taskId") String taskId, @RequestBody Tasks updatedtask){
         return tasksService.updateTaskbyId(taskId,updatedtask);
+    }*/
+
+    @RequestMapping(value = "/updateTaskbyId",method = RequestMethod.POST)
+    public ResponseEntity<?> updateTaskbyId(@RequestParam(name = "taskId")String taskId,@RequestBody Tasks tasks) {
+        if(tasksService.updateTaskbyId(taskId,tasks)!=0) {
+            return new ResponseEntity<>(tasksService.updateTaskbyId(taskId,tasks), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(0, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-
-
 }

@@ -70,28 +70,23 @@ public class TasksDaoService implements TasksDao{
     @Override
     public Tasks selectTaskbyId(String taskId) {
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = dbFirestore.collection(COL_NAME).get();
+        ApiFuture<QuerySnapshot> future = dbFirestore.collection(COL_NAME).whereEqualTo("taskId",taskId).get();
         Tasks mySelectedTask = null;
-        List<QueryDocumentSnapshot> documents = null;
-        try {
-            documents = future.get().getDocuments();
-            for (QueryDocumentSnapshot document : documents) {
-                //System.out.println(document.getId() + " => " + document.toObject(Issues.class));
-                Tasks allTasks = document.toObject(Tasks.class);
-                if (allTasks.getTaskId().equals(taskId)){
-                    mySelectedTask = allTasks;
-                   // tasksList.add(mySelectedTask);
-                }
 
+        try {
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+            for (QueryDocumentSnapshot document : documents) {
+
+                mySelectedTask = document.toObject(Tasks.class);
 
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return mySelectedTask;
+
     }
+
 
     @Override
     public int deleteTaskbyId(String taskId) {
@@ -131,32 +126,38 @@ public class TasksDaoService implements TasksDao{
                         "taskDuration" , updatedTask.getTaskDuration(),
                         "taskStatus" , updatedTask.getTaskStatus()
                 );
-        return  1;
+        ApiFutures.addCallback(future, new ApiFutureCallback<WriteResult>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                res=0;
+            }
+
+            @Override
+            public void onSuccess(WriteResult writeResult) {
+                res=1;
+            }
+        },Runnable::run);
+        return res;
     }
 
+
     @Override
-    public List<Tasks> selectTaskbyCreator(String userId) {
+    public List<Tasks> selectTaskbyCreator(String userId){
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = dbFirestore.collection(COL_NAME).get();
-        String uid = userId.replace("user-","");
+        ApiFuture<QuerySnapshot> future = dbFirestore.collection(COL_NAME).whereEqualTo("taskCreatedBy",userId).get();
         Tasks tasks = null;
-        List<QueryDocumentSnapshot> documents = null;
         tasksList.clear();
-       // System.out.println(userId +"     "+ uid);
         try {
-            documents = future.get().getDocuments();
-            for (QueryDocumentSnapshot document : documents) {
-                //System.out.println(document.getId() + " => " + document.toObject(Tasks.class));
-                tasks = document.toObject(Tasks.class);
-                if(tasks.getTaskCreatedBy().equals(uid))
-                tasksList.add(tasks);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }catch (ExecutionException e) {
+                List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+                for (QueryDocumentSnapshot document : documents) {
+                    //System.out.println(document.getId() + " => " + document.toObject(Tasks.class));
+                    tasks = document.toObject(Tasks.class);
+                    //if(tasks.getTaskCreatedBy().equals(userId))
+                        tasksList.add(tasks);
+                }
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
         return tasksList;
     }
 }
