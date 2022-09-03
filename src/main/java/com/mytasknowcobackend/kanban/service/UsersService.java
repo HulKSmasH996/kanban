@@ -27,7 +27,7 @@ public class UsersService {
 
     public  Users selectUserbyId(String userId){ return  usersDao.selectUserbyId(userId); }
 
-    public void deleteUserbyId(String userId){  usersDao.deleteUserbyId(userId); }
+    public int deleteUserbyId(String userId){return   usersDao.deleteUserbyId(userId); }
 
     public int updateUserbyId(String userId, Users updatedUser){ return usersDao.updateUserbyId(userId,updatedUser); }
 

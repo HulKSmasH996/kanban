@@ -53,7 +53,7 @@ public class TasksDaoService implements TasksDao{
         try {
             documents = future.get().getDocuments();
             for (QueryDocumentSnapshot document : documents) {
-                System.out.println(document.getId() + " => " + document.toObject(Tasks.class));
+                //System.out.println(document.getId() + " => " + document.toObject(Tasks.class));
                 tasks = document.toObject(Tasks.class);
                 tasksList.add(tasks);
             }
@@ -94,6 +94,8 @@ public class TasksDaoService implements TasksDao{
         Firestore dbFirestore = FirestoreClient.getFirestore();
         ApiFuture<WriteResult> writeResult = dbFirestore.collection(COL_NAME).document(String.valueOf(taskId)).delete();
         ApiFutures.addCallback(writeResult, new ApiFutureCallback<WriteResult>() {
+            private WriteResult writeResult;
+
             @Override
             public void onFailure(Throwable throwable) {
                res = 0;
@@ -102,6 +104,8 @@ public class TasksDaoService implements TasksDao{
             @Override
             public void onSuccess(WriteResult writeResult) {
                 res = 1;
+
+
             }
         },Runnable::run);
         return res;
