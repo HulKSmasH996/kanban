@@ -1,10 +1,11 @@
 package com.mytasknowcobackend.kanban.dao;
 
 import com.google.api.core.ApiFuture;
+import com.google.api.core.ApiFutureCallback;
+import com.google.api.core.ApiFutures;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 
-import com.mytasknowcobackend.kanban.model.Issues;
 import com.mytasknowcobackend.kanban.model.Users;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +18,7 @@ public class UsersDaoService implements UsersDao{
 
     public static final String COL_NAME = "users";
     public static List<Users> usersList = new ArrayList<>();
-
+    public static int res = 0;
 
     @Override
     public int addUser(Users newuser) {
@@ -27,7 +28,18 @@ public class UsersDaoService implements UsersDao{
         //System.out.println("Added document with ID: " + addedDocRef.getId());
         newuser.setUserId(addedDocRef.getId().toString());
         ApiFuture<WriteResult> writeResult = addedDocRef.set(newuser);
-        return 1;
+        ApiFutures.addCallback(writeResult, new ApiFutureCallback<WriteResult>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                res=0;
+            }
+
+            @Override
+            public void onSuccess(WriteResult writeResult) {
+                res =1;
+            }
+        },Runnable::run);
+        return res;
     }
 
     @Override
@@ -40,7 +52,7 @@ public class UsersDaoService implements UsersDao{
         try {
             documents = future.get().getDocuments();
             for (QueryDocumentSnapshot document : documents) {
-                System.out.println(document.getId() + " => " + document.toObject(Users.class));
+                //System.out.println(document.getId() + " => " + document.toObject(Users.class));
                 user = document.toObject(Users.class);
                 usersList.add(user);
             }
@@ -57,23 +69,20 @@ public class UsersDaoService implements UsersDao{
     @Override
     public Users selectUserbyId(String userId) {
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = dbFirestore.collection(COL_NAME).get();
-        Users mySelectedUser = null;
-        List<QueryDocumentSnapshot> documents = null;
+        ApiFuture<QuerySnapshot> future = dbFirestore.collection(COL_NAME).whereEqualTo("userId",userId).get();
+        Users myselectedUser = null;
+
         try {
-            documents = future.get().getDocuments();
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
             for (QueryDocumentSnapshot document : documents) {
-                //System.out.println(document.getId() + " => " + document.toObject(Issues.class));
-                Users allUsers = document.toObject(Users.class);
-                if (allUsers.getUserId().equals(userId))
-                    mySelectedUser = allUsers;
+
+                myselectedUser = document.toObject(Users.class);
+
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return mySelectedUser;
+        return myselectedUser;
     }
 
     @Override
@@ -81,8 +90,18 @@ public class UsersDaoService implements UsersDao{
 
         Firestore dbFirestore = FirestoreClient.getFirestore();
         ApiFuture<WriteResult> writeResult = dbFirestore.collection(COL_NAME).document(String.valueOf(userId)).delete();
-        return 1;
+        ApiFutures.addCallback(writeResult, new ApiFutureCallback<WriteResult>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                res = 0;
+            }
 
+            @Override
+            public void onSuccess(WriteResult writeResult) {
+                res = 1;
+            }
+        },Runnable::run);
+        return res;
     }
 
     @Override
@@ -101,7 +120,18 @@ public class UsersDaoService implements UsersDao{
                         "userIssues" , updatedUser.getUserIssues()
 
                         );
-        return  1;
+        ApiFutures.addCallback(future, new ApiFutureCallback<WriteResult>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                res=0;
+            }
+
+            @Override
+            public void onSuccess(WriteResult writeResult) {
+                res=1;
+            }
+        },Runnable::run);
+        return res;
 
     }
 }

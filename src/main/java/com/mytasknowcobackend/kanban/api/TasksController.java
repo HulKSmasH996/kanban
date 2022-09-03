@@ -44,7 +44,6 @@ public class TasksController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
-
     @RequestMapping(value="/getTaskbyUserId", method = RequestMethod.GET)
     public ResponseEntity<?> getTaskbyICreator(@RequestParam(name = "userId") String taskId) {
         if(!tasksService.selectTaskbyCreator(taskId).isEmpty()) {
@@ -67,12 +66,8 @@ public class TasksController {
         }
     }
 
-   /* @PutMapping(path = "{taskId}")
-    public  int  updateTaskbyId(@PathVariable("taskId") String taskId, @RequestBody Tasks updatedtask){
-        return tasksService.updateTaskbyId(taskId,updatedtask);
-    }*/
 
-    @RequestMapping(value = "/updateTaskbyId",method = RequestMethod.POST)
+    @RequestMapping(value = "/updateTaskbyId",method = RequestMethod.PUT)
     public ResponseEntity<?> updateTaskbyId(@RequestParam(name = "taskId")String taskId,@RequestBody Tasks tasks) {
         if(tasksService.updateTaskbyId(taskId,tasks)!=0) {
             return new ResponseEntity<>(tasksService.updateTaskbyId(taskId,tasks), HttpStatus.OK);
