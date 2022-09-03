@@ -90,24 +90,27 @@ public class TasksDaoService implements TasksDao{
 
     @Override
     public int deleteTaskbyId(String taskId) {
-
+        res=0;
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> writeResult = dbFirestore.collection(COL_NAME).document(String.valueOf(taskId)).delete();
-        ApiFutures.addCallback(writeResult, new ApiFutureCallback<WriteResult>() {
-            private WriteResult writeResult;
+        ApiFuture<QuerySnapshot> future = dbFirestore.collection(COL_NAME).whereEqualTo("taskId",taskId).get();
 
-            @Override
-            public void onFailure(Throwable throwable) {
-               res = 0;
+            try {
+
+                List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+                for (QueryDocumentSnapshot document : documents) {
+                    if(!documents.isEmpty()){
+                        document.getReference().delete();
+                        res = 1;
+                        return res;
+                    }
+
+                }
+
+            } catch (Exception e) {
+                System.err.println("Error deleting collection : " + e.getMessage());
             }
 
-            @Override
-            public void onSuccess(WriteResult writeResult) {
-                res = 1;
 
-
-            }
-        },Runnable::run);
         return res;
     }
 
@@ -115,7 +118,6 @@ public class TasksDaoService implements TasksDao{
     public int updateTaskbyId(String taskId, Tasks updatedTask) {
         Firestore dbFirestore = FirestoreClient.getFirestore();
         DocumentReference docRef = dbFirestore.collection(COL_NAME).document(taskId);
-
         // (async) Update fields
         ApiFuture<WriteResult> future = docRef.
                 update(
