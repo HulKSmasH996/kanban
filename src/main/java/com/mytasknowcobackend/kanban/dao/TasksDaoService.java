@@ -90,33 +90,25 @@ public class TasksDaoService implements TasksDao{
 
     @Override
     public int deleteTaskbyId(String taskId) {
-        res=0;
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = dbFirestore.collection(COL_NAME).whereEqualTo("taskId",taskId).get();
-
-            try {
-
-                List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-                for (QueryDocumentSnapshot document : documents) {
-                    if(!documents.isEmpty()){
-                        document.getReference().delete();
-                        res = 1;
-                        return res;
-                    }
-
-                }
-
-            } catch (Exception e) {
-                System.err.println("Error deleting collection : " + e.getMessage());
+        DocumentReference documentReference = dbFirestore.collection(COL_NAME).document(taskId);
+        ApiFuture<DocumentSnapshot> future = documentReference.get();
+        try{
+            DocumentSnapshot documentSnapshot = future.get();
+            if(documentSnapshot.exists()){
+                documentSnapshot.getReference().delete();
+                  res = 1;
+                  return  res;
             }
-
+        }catch(Exception E){E.printStackTrace();}
 
         return res;
+
     }
 
     @Override
     public int updateTaskbyId(String taskId, Tasks updatedTask) {
-        Firestore dbFirestore = FirestoreClient.getFirestore();
+/*        Firestore dbFirestore = FirestoreClient.getFirestore();
         DocumentReference docRef = dbFirestore.collection(COL_NAME).document(taskId);
         // (async) Update fields
         ApiFuture<WriteResult> future = docRef.
@@ -143,7 +135,35 @@ public class TasksDaoService implements TasksDao{
                 res=1;
             }
         },Runnable::run);
+        return res;*/
+
+
+        Firestore dbFirestore = FirestoreClient.getFirestore();
+        DocumentReference documentReference = dbFirestore.collection(COL_NAME).document(taskId);
+        ApiFuture<DocumentSnapshot> future = documentReference.get();
+        try{
+            DocumentSnapshot documentSnapshot = future.get();
+            if(documentSnapshot.exists()){
+                documentSnapshot.getReference(). update(
+                        "taskName" , updatedTask.getTaskName(),
+                        "taskId" , updatedTask.getTaskId(),
+                        "taskType" , updatedTask.getTaskType(),
+                        "taskPriority" , updatedTask.getTaskPriority(),
+                        "taskDescription" , updatedTask.getTaskDescription(),
+                        "taskCreatedBy", updatedTask.getTaskCreatedBy(),
+                        "taskStartTime" , updatedTask.getTaskStartTime(),
+                        "taskEndTime" , updatedTask.getTaskEndTime(),
+                        "taskDuration" , updatedTask.getTaskDuration(),
+                        "taskStatus" , updatedTask.getTaskStatus()
+                );
+                res = 1;
+                return  res;
+            }else res=0;
+        }catch(Exception E){E.printStackTrace();}
+
         return res;
+
+
     }
 
 
