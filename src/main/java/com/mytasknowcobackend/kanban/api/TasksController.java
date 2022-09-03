@@ -60,7 +60,7 @@ public class TasksController {
     @RequestMapping(value="/deleteTaskbyId", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteTaskbyId(@RequestParam(name = "taskId") String taskId) {
         if(tasksService.deleteTaskbyId(taskId)!=0) {
-            return new ResponseEntity<>(tasksService.selectTaskbyId(taskId), HttpStatus.OK);
+            return new ResponseEntity<>(tasksService.deleteTaskbyId(taskId), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(0, HttpStatus.NOT_FOUND);
         }
