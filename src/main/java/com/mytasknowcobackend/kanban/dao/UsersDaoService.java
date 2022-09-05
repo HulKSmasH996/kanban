@@ -87,27 +87,26 @@ public class UsersDaoService implements UsersDao{
 
     @Override
     public int deleteUserbyId(String userId) {
-
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> writeResult = dbFirestore.collection(COL_NAME).document(String.valueOf(userId)).delete();
-        ApiFutures.addCallback(writeResult, new ApiFutureCallback<WriteResult>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                res = 0;
-            }
-
-            @Override
-            public void onSuccess(WriteResult writeResult) {
+        DocumentReference documentReference = dbFirestore.collection(COL_NAME).document(userId);
+        ApiFuture<DocumentSnapshot> future = documentReference.get();
+        try{
+            DocumentSnapshot documentSnapshot = future.get();
+            if(documentSnapshot.exists()){
+                documentSnapshot.getReference().delete();
                 res = 1;
+                return  res;
             }
-        },Runnable::run);
+        }catch(Exception E){E.printStackTrace();}
+
         return res;
+
     }
 
     @Override
     public int updateUserbyId(String userId, Users updatedUser) {
 
-        Firestore dbFirestore = FirestoreClient.getFirestore();
+/*        Firestore dbFirestore = FirestoreClient.getFirestore();
         DocumentReference docRef = dbFirestore.collection(COL_NAME).document(userId);
 
         // (async) Update fields
@@ -131,7 +130,30 @@ public class UsersDaoService implements UsersDao{
                 res=1;
             }
         },Runnable::run);
+        return res;*/
+
+
+        Firestore dbFirestore = FirestoreClient.getFirestore();
+        DocumentReference documentReference = dbFirestore.collection(COL_NAME).document(userId);
+        ApiFuture<DocumentSnapshot> future = documentReference.get();
+        try{
+            DocumentSnapshot documentSnapshot = future.get();
+            if(documentSnapshot.exists()){
+                documentSnapshot.getReference().update(
+                        "userName" , updatedUser.getUserName(),
+                        "userEmail" , updatedUser.getUserEmail(),
+                        "userId" , updatedUser.getUserId(),
+                        "userDetails" , updatedUser.getUserDetails(),
+                        "userIssues" , updatedUser.getUserIssues()
+
+                );
+                res = 1;
+                return  res;
+            }else res=0;
+        }catch(Exception E){E.printStackTrace();}
+
         return res;
+
 
     }
 }
