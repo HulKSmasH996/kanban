@@ -20,7 +20,7 @@ public class FBinit {
            /* FileInputStream serviceAccount1 =
                     new FileInputStream("path/to/serviceAccountKey.json");*/
 
-            FirebaseOptions options = new FirebaseOptions.Builder()
+            FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .setDatabaseUrl("https://mytasknow-co.firebaseio.com")
                     .build();
