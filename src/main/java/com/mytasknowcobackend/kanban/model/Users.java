@@ -14,6 +14,8 @@ public class Users implements Serializable {
     String userDetails;
     String userIssues;
 
+    String userPicture;
+
     public String getUserName() {
         return userName;
     }
@@ -64,7 +66,5 @@ public class Users implements Serializable {
 
     public Users() {
     }
-
-
 
 }
